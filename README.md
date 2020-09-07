@@ -107,46 +107,39 @@ terraform apply
 
     http://(public IP address):8080にアクセスして画面に従ってまず初期設定する
     $ sudo less /var/lib/jenkins/secrets/initialAdminPassword
-    Unlock Jenkinsは初期パスワードを確認して入力する
+    （Unlock Jenkinsは初期パスワードを確認して入力する）
     
     Customize JenkinsはとりあえずInstall suggested pulginsを選択
-        Create First Admin Userで管理者ユーザーを登録
+    （Create First Admin Userで管理者ユーザーを登録）
 
->> Instance Configurationでhttp://(public IP address):8081/jenkins/と入力
+    Instance Configurationでhttp://(public IP address):8081/jenkins/と入力
 
->> Save and Finishで設定完了
+    Save and Finishで設定完了
 
->> URLとportの設定を変更する
+    URLとportの設定を変更する
 
->> 初期設定の4に書いたようにhttp://(public IP address):8081/jenkins/で動かしたいので、設定を変更してJenkinsを再起動する
+    http://(public IP address):8081/jenkins/で動かしたいので、設定を変更してJenkinsを再起動する
 
->> $ sudo vi /etc/sysconfig/jenkins
+    $ sudo vi /etc/sysconfig/jenkins
 
->> JENKINS_PORT="8081"
+    JENKINS_PORT="8081"
+    JENKINS_ARGS="--prefix=/jenkins"
 
->> JENKINS_ARGS="--prefix=/jenkins"
-
->> $ sudo systemctl restart jenkins
-
->> http://(public IP address):8081/jenkins/にアクセスして初期設定した管理者ユーザーでログインできれば完成
-
+    $ sudo systemctl restart jenkins
+        →http://(public IP address):8081/jenkins/にアクセスして初期設定した管理者ユーザーでログインできれば完成
 
 > ⑧.Jenkinsからgitを使えるようにgitをインストールする
 
->> yum install -y git
-
+    yum install -y git
 
 > ⑨.Jenkins（http://(public IP address):8081/jenkins/）にアクセスして設定する
 
-    >> ダッシュボードで「新規ジョブ作成」
+    ダッシュボードで「新規ジョブ作成」
 
-    >> 　→Enter an item nameに適当な名前を付けて、「フリースタイル・プロジェクトのビルド」を選択し、ＯＫをクリック
+    「Enter an item name」に適当な名前を付けて、「フリースタイル・プロジェクトのビルド」を選択し、ＯＫをクリック
 
-    >> 以下設定項目
-
->> ●General
-
-    >> 「Github project」にレ点を付けて、該当レポジトリのあるURLを記載
+    ●General
+        「Github project」にレ点を付けて、該当レポジトリのあるURLを記載
 
     >> 例：https://github.com/masakioikawa0503/jenkins/
 
