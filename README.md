@@ -1,5 +1,6 @@
 # Jenkins_practice
 Jenkins(AWS)とGithubの連携を行うにあたり、備忘録として手順下記に記述
+（以下参考サイトを元に自分なりに加筆・修正している部分が含まれますので適宜読み替えをしていく）
 
 ～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～
 
@@ -29,19 +30,19 @@ Jenkins(AWS)とGithubの連携を行うにあたり、備忘録として手順�
     -（手順は主にGithubとJenkinsの連携部分に焦点をあてて記述していく。例えばGithubのリポジトリの作り方等は他サイトを参照して作成する）
 
 ## Github
-1.検証用リポジトリを作成<br>
+## 1.検証用リポジトリを作成<br>
 [今回の検証用リモートリポジトリ](https://github.com/masakioikawa0503/jenkins.git)
 
-2.サンプルファイルを作成する
+## 2.サンプルファイルを作成する
 作成ファイルは上記リポジトリを参照
 
 ## ローカル(WSL2)
-3.検証用リモートリポジトリのクローン
+## 3.検証用リモートリポジトリのクローン
 ```git:検証用リモートリポジトリをローカルにクローンする
 git clone https://github.com/masakioikawa0503/jenkins.git
 ```
 
-4.EC2環境をterraformで構築する
+## 4.EC2環境をterraformで構築する
 - 下記をgitクローン後Terraform_AWSディレクトリに進み、「terraform init→terraform plan→terraform apply」を実行する
     - (事前にterraformのインストールやEC2インスタンスへのアクセスキー等の準備が必要)
 ```terraform:terraformでEC2環境を構築
@@ -56,7 +57,7 @@ terraform apply
 詳細なterraformの使い方は公式ドキュメントを参考<br>
 [Terraform](https://registry.terraform.io/providers/hashicorp/aws/latest/docs)
 
-## Jenkins（AWS）
+## Jenkins（AWS）1/2
 ## 5.WSL2からsshでterraformで構築したEC2にアクセスし、以下参考サイトを基にJenkinsを実装
     JenkinsをEC2に導入する方法は以下の参考サイトを参考に導入<br>
     [【AWS EC2】Amazon Linux 2にJenkinsをインストールする](https://qiita.com/tamorieeeen/items/15d90adeebbf8b408c78)
@@ -140,147 +141,127 @@ terraform apply
 
     ●General
         「Github project」にレ点を付けて、該当レポジトリのあるURLを記載
+            →例：https://github.com/masakioikawa0503/jenkins/
 
-    >> 例：https://github.com/masakioikawa0503/jenkins/
+    ●ソースコード管理
 
->> ●ソースコード管理
+        「Git」を選択
+        リポジトリURLは、~.gitを指定（例：https://github.com/masakioikawa0503/jenkins.git）
+        認証情報は今回検証用なので「なし」のまま
+        ビルドするブランチもデフォルト「*/master」のまま
+        リポジトリブラウザもデフォルト「自動」
 
-    >> 「Git」を選択
+    ●ビルド・トリガ
 
-    >> リポジトリURLは、~.gitを指定（例：https://github.com/masakioikawa0503/jenkins.git）
+        「GitHub hook trigger for GITScm polling」にレ点を入れる
 
-    >> 認証情報は今回検証用なので「なし」のまま
+    ●ビルド環境
 
-    >> ビルドするブランチもデフォルト「*/master」のまま
+        設定なし（レ点チェック不要）
 
-    >> リポジトリブラウザもデフォルト「自動」
+    ●ビルド
 
->> ●ビルド・トリガ
+        「ビルド手順の追加」をクリックし「シェルの実行」を選択
+        「シェルの実行」欄に以下を記載（冒頭に述べたjavaサンプルプログラムのコンパイルと実行）
 
-    >> GitHub hook trigger for GITScm pollingにレ点を入れる
+    （以下は今回の検証用に用意したオリジナルスクリプト）
+    ```Shell:シェルスクリプト
+    cd /var/lib/jenkins/jenkins
+    git pull https://github.com/masakioikawa0503/jenkins.git
+    javac Hello.java
+    java Hello
+    ```
 
->> ●ビルド環境
+    上記投入確認後、保存をクリック
 
-    >> 設定なし（レ点チェック不要）
-
->> ●ビルド
-
-    >> 「ビルド手順の追加」をクリックし「シェルの実行」を選択
-
-    >> 「シェルの実行」欄に以下を記載（冒頭に述べたjavaサンプルプログラムのコンパイルと実行）
-
-```Shell:シェルスクリプト（ここは参考サイトを元に今回の検証用で作成したオリジナル部分です）
-cd /var/lib/jenkins/jenkins
-git pull https://github.com/masakioikawa0503/jenkins.git
-javac Hello.java
-java Hello
-```
-
-> 上記投入確認後、保存をクリック
-
-⑧Jenkins→Githubにアクセスする際に公開鍵の作成
-以下サイトを参考に実施
-https://qiita.com/pakiran/items/458fae106566c6c3c963
+## Jenkins（AWS）2/2
+6.Jenkins→Githubにアクセスする際に公開鍵の作成
+- 以下サイトを参考に実施
+[[CI] AWS EC2にJenkinsをインストールして、GitHubと連携させる](https://qiita.com/pakiran/items/458fae106566c6c3c963)
 （以下、参考サイトより）
 
-1.Jenkins用のGithubアカウントを作成
-Jenkinsがリポジトリからソースコードを取得してきたり、テスト結果をGitHubに通知するためのJenkins専用GitHubアカウントを作成します。
+> ①.Jenkins用のGithubアカウントを作成
+    
+    Jenkinsがリポジトリからソースコードを取得してきたり、テスト結果をGitHubに通知するためのJenkins専用GitHubアカウントを作成します。
+    （注：このとき公開鍵認証に必要なSSH keyのパスフレーズは空で設定しましょう！）
 
-注：このとき公開鍵認証に必要なSSH keyのパスフレーズは空で設定しましょう！
+> ②.Jenkinsユーザの設定
+    
+    vimでfalseをbashに変更する
+    
+    $ cat /etc/passwd/　（Before）
+    jenkins:x:220:499:Jenkins Continuous Build server:/var/lib/jenkins:/bin/false
+    $ sudo vim /etc/passwd　（After）
+    jenkins:x:220:499:Jenkins Continuous Build server:/var/lib/jenkins:/bin/bash
+
+    jenkinsフォルダの権限を変更
+    $ ls -la /var/lib/jenkins
+    $ chown -R jenkins:jenkins /var/lib/jenkins
+
+    Jenkinsユーザでログイン
+    $ sudo su jenkins
+    jenkinsユーザでログイン後はbash-4.2$と表示されるようになります。
+
+> ③.公開鍵を作成(今回パスフレーズ等は空で作成)
+
+    bash-4.1$ cd /var/lib/jenkins/.ssh/
+    bash-4.1$ ssh-keygen -t rsa
+    Generating public/private rsa key pair.
+    Enter file in which to save the key (/var/lib/jenkins/.ssh/id_rsa):（そのままEnter）
+    Enter passphrase (empty for no passphrase):（そのままEnter）
+    Enter same passphrase again:（そのままEnter）
+    Your identification has been saved in /var/lib/jenkins/.ssh/id_rsa.
+    Your public key has been saved in /var/lib/jenkins/.ssh/id_rsa.pub.
+    The key fingerprint is:
+    be:0d:a3:a8:18:3d:3c:c6:1c:89:5e:1b:a2:b2:2a:aX jenkins@ip-XX-XX-XX-XXX
+    The key's randomart image is:
+    +--[ RSA 2048]----+
+    |                 |
+    |                 |
+    |                 |
+    |                 |
+    |                 |
+    |                 |
+    |                 |
+    |                 |
+    |                 |
+    +-----------------+
+    作成した公開鍵(id_rsa.pub)を、Jenkins用GitHubアカウントに追加（add key）→後述
+
+> ④.jenkinsユーザのgit設定
+
+    /var/lib/jankinsディレクトリ下でないとfatal: failed to stat '.': Permission deniedになるので注意！
+    user.emailとuser.nameにはJenkins用アカウントのemailとuser名を入力
+
+    bash-4.2$ git config --global user.email "hoge@XXXXX.co.jp"
+    bash-4.2$ git config --global user.name "hoge"
 
 
-2.Jenkinsユーザの設定
-vimでfalseをbashに変更する
+    以上まで完了後、今回検証用のGithubリモートリポジトリからgit cloneしておく
+    bash-4.2$ cd /var/lib/jenkins
+    bash-4.2$ git clone https://github.com/masakioikawa0503/jenkins.git
 
-$ cat /etc/passwd/
-jenkins:x:220:499:Jenkins Continuous Build server:/var/lib/jenkins:/bin/false
-$ sudo vim /etc/passwd
-jenkins:x:220:499:Jenkins Continuous Build server:/var/lib/jenkins:/bin/bash
-
-jenkinsフォルダの権限を変更
-$ ls -la /var/lib/jenkins
-$ chown -R jenkins:jenkins /var/lib/jenkins
-
-Jenkinsユーザでログイン
-$ sudo su jenkins
-jenkinsユーザでログイン後はbash-4.1$と表示されるようになります。
-
-3.公開鍵を作成(今回パスフレーズ等は空で作成)
-bash-4.1$ cd /var/lib/jenkins/.ssh/
-bash-4.1$ ssh-keygen -t rsa
-Generating public/private rsa key pair.
-Enter file in which to save the key (/var/lib/jenkins/.ssh/id_rsa):（そのままEnter）
-Enter passphrase (empty for no passphrase):（そのままEnter）
-Enter same passphrase again:（そのままEnter）
-Your identification has been saved in /var/lib/jenkins/.ssh/id_rsa.
-Your public key has been saved in /var/lib/jenkins/.ssh/id_rsa.pub.
-The key fingerprint is:
-be:0d:a3:a8:18:3d:3c:c6:1c:89:5e:1b:a2:b2:2a:aX jenkins@ip-XX-XX-XX-XXX
-The key's randomart image is:
-+--[ RSA 2048]----+
-|                 |
-|                 |
-|                 |
-|                 |
-|                 |
-|                 |
-|                 |
-|                 |
-|                 |
-+-----------------+
-作成した公開鍵(id_rsa.pub)を、Jenkins用GitHubアカウントに追加（add key）
-　→後述
-
-
-4.jenkinsユーザのgit設定
-/var/lib/jankinsディレクトリ下でないとfatal: failed to stat '.': Permission deniedになるので注意！
-
-user.emailとuser.nameにはJenkins用アカウントのemailとuser名を入力
-
-bash-4.1$ git config --global user.email "hoge@XXXXX.co.jp"
-bash-4.1$ git config --global user.name "hoge"
-
-
-以上まで完了後、今回検証用のGithubリモートリポジトリからgit cloneしておく
-(参考)
-cd /var/lib/jenkins
-git clone https://github.com/masakioikawa0503/jenkins.git
-
-上記で器を用意してあげれば、あとはJenkinsのビルドスクリプトで記載したシェルスクリプトで
-git push通知を受けるたび、git pullして処理を実施する形になる
-
-=========================
-
-↓
-↓
-↓
+    （上記で器を用意してあげれば、あとはJenkinsのビルドスクリプトで記載したシェルスクリプトでgit push通知を受けるたび、git pullして処理を実施する形になる）
 
 #Github
-=========================
-⑨右上Settings→「SSH and GPG Keys」を開く
-SSH Keysで「New SSH Key」を選択して、Titleとkey(前述した⑧の最後の方で作成したJenkinsの公開鍵の内容をそのままコピ&ペースト)を投入
-    →Ass SSH keyをクリック
+7.Githubリポジトリ（自分のアカウント上）右上Settings→「SSH and GPG Keys」を開く
+- SSH Keysで「New SSH Key」を選択して、Titleとkey(前述した「③.公開鍵を作成(今回パスフレーズ等は空で作成)」で作成したJenkinsの公開鍵の内容をそのままコピ&ペースト)を投入→Ass SSH keyをクリック
 
-⑩リモートリポジトリの設定
-今回検証用で用意したJenkinsと連携するリポジトリの「Settings」を選択
-    →「webhooks」を選択し「Add webhook」をクリック
-        →Payload URL：http://[Jenkinsのホスト名（ポート番号やプレフィックスを指定している場合はそれも記載）]/github-webhook/
-            (例：〇〇.〇〇.〇〇.〇〇:8081/jenkins/github-webhook/)
-    →Content type
-        application/x-www-form-urlencordedを選択
-    →secret
-        記載なし
+8.リモートリポジトリの設定
+- 今回検証用で用意したJenkinsと連携するリポジトリの「Settings」を選択
+-「webhooks」を選択し「Add webhook」をクリック
+- Payload URL：http://[Jenkinsのホスト名（ポート番号やプレフィックスを指定している場合はそれも記載）]/github-webhook/
+    (例：〇〇.〇〇.〇〇.〇〇:8081/jenkins/github-webhook/)
+- Content type
+    application/x-www-form-urlencordedを選択
+- secret
+    記載なし
+- Which events would you like to trigger this webhook?
+    「Just the push event.」を選択
+- Activeにレ点が入っていることをチェック
 
-    →Which events would you like to trigger this webhook?
-        Just the push event.を選択
-
-    →Activeにレ点が入っていることをチェック
-
-上記投入後「Update webhook」をクリック
-    →適用が成功すると、Webhooksの設定したURLに緑色のレ点が付く（最初は〇印で、適用失敗だと△の警告が表示される）
-
-
-=========================
+- 上記投入後「Update webhook」をクリック
+    適用が成功すると、Webhooksの設定したURLに緑色のレ点が付く（最初は〇印で、適用失敗だと△の警告が表示される）
 
 
 ■参考サイト
