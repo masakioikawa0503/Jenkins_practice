@@ -5,10 +5,10 @@ Jenkins(AWS)とGithubの連携を行うにあたり、備忘録として手順�
 ～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～
 
 
-■目的
+#目的
 ・ローカル環境からGithubへPush通知を行うたびに、Push通知を受け取ったGithubはJenkinsにwebhookを行いビルドを実施させる環境を構築する
-
-■検証環境
+<br>
+#検証環境
 ・ローカル環境：Windows Subsystem for Linux 2 (WSL2 on Ubuntu)　※cat /etc/os-release
     NAME="Ubuntu"
     VERSION="20.04.1 LTS (Focal Fossa)"
@@ -22,26 +22,26 @@ Jenkins(AWS)とGithubの連携を行うにあたり、備忘録として手順�
     PRIVACY_POLICY_URL="https://www.ubuntu.com/legal/terms-and-policies/privacy-policy"
     VERSION_CODENAME=focal
     UBUNTU_CODENAME=focal
-
+<br>
 ・Github:
     URL→https://github.com/masakioikawa0503/jenkins
     リポジトリ→https://github.com/masakioikawa0503/jenkins.git
-
+<br>
 ・Jenkins
     EC2 on AWSで実装
     (簡単に検証環境を構築したいため、「Terraterm」でVPC、パブリックサブネット、IGW、セキュリティグループ、EC2を一気に作成する）
-
-■検証条件
+<br>
+#検証条件
 ・本当はJenkinsサーバ（CI）とデプロイ先サーバ(CD)を分けての検証を視野に入れたが以下の理由により今回は1台（CIサーバのみ）として実装
-　→EC2は従量課金で2台だと単純に2倍コストがかかるため
-　→GithubとJenkinsの連携部分を初めて構築するため、まずは簡単なところから確実に実装して検証していきたいから。
-　→GithubとJenkinsの連携の内容は以下とする
-　　・javaの簡単なサンプルプログラミングをローカルからGithubへpush
-            →Githubはpush通知があったので、Jenkinsに通知する
-                →Jenkinsはpush通知を受け取ったGithubの該当リポジトリを参照してファイルを取得して簡単なテスト（コンパイル、java実行）を実行する
-                    (Jenkinsでは事前にGithubの該当リモートリポジトリからgit cloneをしてリポジトリを取得する)
+    EC2は従量課金で2台だと単純に2倍コストがかかるため
+    GithubとJenkinsの連携部分を初めて構築するため、まずは簡単なところから確実に実装して検証していきたいから。
+    GithubとJenkinsの連携の内容は以下とする
+    javaの簡単なサンプルプログラミングをローカルからGithubへpush
+        Githubはpush通知があったので、Jenkinsに通知する
+        Jenkinsはpush通知を受け取ったGithubの該当リポジトリを参照してファイルを取得して簡単なテスト（コンパイル、java実行）を実行する
+        (Jenkinsでは事前にGithubの該当リモートリポジトリからgit cloneをしてリポジトリを取得する)
 
-■手順
+#手順
 ・以下に私が実施した手順(例)を示す
 （手順は主にGithubとJenkinsの連携部分に焦点をあてて記述していく。例えばGithubのリポジトリの作り方等は他サイトを参照して作成する）
 
