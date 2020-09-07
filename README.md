@@ -28,8 +28,6 @@ Jenkins(AWS)とGithubの連携を行うにあたり、備忘録として手順�
 - 以下に私が実施した手順(例)を示す
     -（手順は主にGithubとJenkinsの連携部分に焦点をあてて記述していく。例えばGithubのリポジトリの作り方等は他サイトを参照して作成する）
 
-
-
 ## Github
 1.検証用リポジトリを作成<br>
 [今回の検証用リモートリポジトリ](https://github.com/masakioikawa0503/jenkins.git)
@@ -58,25 +56,21 @@ terraform apply
 詳細なterraformの使い方は公式ドキュメントを参考<br>
 [Terraform](https://registry.terraform.io/providers/hashicorp/aws/latest/docs)
 
-
-
 ## Jenkins（AWS）
 ## 5.WSL2からsshでterraformで構築したEC2にアクセスし、以下参考サイトを基にJenkinsを実装
 - JenkinsをEC2に導入する方法は以下の参考サイトを参考に導入<br>
-    - [【AWS EC2】Amazon Linux 2にJenkinsをインストールする](https://qiita.com/tamorieeeen/items/15d90adeebbf8b408c78)
+- [【AWS EC2】Amazon Linux 2にJenkinsをインストールする](https://qiita.com/tamorieeeen/items/15d90adeebbf8b408c78)
 
 - （以下、参考サイトより）
 > ①.JDK 8のインストールを実施する
 
->> $ sudo yum update -y
-
->> $ sudo yum install -y java-1.8.0-openjdk-devel.x86_64
-
->> $ sudo alternatives --config java
+    >> $ sudo yum update -y
+    >> $ sudo yum install -y java-1.8.0-openjdk-devel.x86_64
+    >> $ sudo alternatives --config java
 
 >> $ java -version
 
->> ②.Jenkinsのyumリポジトリを追加する
+> ②.Jenkinsのyumリポジトリを追加する
 
 >> $ sudo wget -O /etc/yum.repos.d/jenkins.repo https://pkg.jenkins.io/redhat/jenkins.repo
 
