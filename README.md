@@ -164,12 +164,12 @@ terraform apply
         「ビルド手順の追加」をクリックし「シェルの実行」を選択
         「シェルの実行」欄に以下を記載（冒頭に述べたjavaサンプルプログラムのコンパイルと実行）
 
-    （以下は今回の検証用に用意したオリジナルスクリプト）
-    〇シェルスクリプト
-    cd /var/lib/jenkins/jenkins
-    git pull https://github.com/masakioikawa0503/jenkins.git
-    javac Hello.java
-    java Hello
+        （以下は今回の検証用に用意したオリジナルスクリプト）
+        〇シェルスクリプト
+            cd /var/lib/jenkins/jenkins
+            git pull https://github.com/masakioikawa0503/jenkins.git
+            javac Hello.java
+            java Hello
     
 
     上記投入確認後、保存をクリック
@@ -252,15 +252,21 @@ terraform apply
 8.リモートリポジトリの設定
 
     - 今回検証用で用意したJenkinsと連携するリポジトリの「Settings」を選択
+    
     -「webhooks」を選択し「Add webhook」をクリック
+    
     - Payload URL：http://[Jenkinsのホスト名（ポート番号やプレフィックスを指定している場合はそれも記載）]/github-webhook/
      (例：〇〇.〇〇.〇〇.〇〇:8081/jenkins/github-webhook/)
+    
     - Content type
     application/x-www-form-urlencordedを選択
+    
     - secret
         記載なし
+    
     - Which events would you like to trigger this webhook?
     「Just the push event.」を選択
+    
     - Activeにレ点が入っていることをチェック
 
     - 上記投入後「Update webhook」をクリック
