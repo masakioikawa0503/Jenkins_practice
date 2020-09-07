@@ -15,8 +15,8 @@ Jenkins(AWS)とGithubの連携を行うにあたり、備忘録として手順�
     リポジトリ→https://github.com/masakioikawa0503/jenkins.git
 <br>
 ・Jenkins
-    EC2 on AWSで実装
-    (簡単に検証環境を構築したいため、「Terraterm」でVPC、パブリックサブネット、IGW、セキュリティグループ、EC2を一気に作成する）
+- EC2 on AWSで実装
+- (簡単に検証環境を構築したいため、「Terraterm」でVPC、パブリックサブネット、IGW、セキュリティグループ、EC2を一気に作成する）
 <br>
 # 検証条件
 ・本当はJenkinsサーバ（CI）とデプロイ先サーバ(CD)を分けての検証を視野に入れたが以下の理由により今回は1台（CIサーバのみ）として実装
