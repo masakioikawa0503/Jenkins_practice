@@ -61,145 +61,144 @@ terraform apply
 
 
 ## Jenkins（AWS）
-5.WSL2からsshでterraformで構築したEC2にアクセスし、以下参考サイトを基にJenkinsを実装
+## 5.WSL2からsshでterraformで構築したEC2にアクセスし、以下参考サイトを基にJenkinsを実装
 - JenkinsをEC2に導入する方法は以下の参考サイトを参考に導入<br>
     - [【AWS EC2】Amazon Linux 2にJenkinsをインストールする](https://qiita.com/tamorieeeen/items/15d90adeebbf8b408c78)
 
 - （以下、参考サイトより）
 > ①.JDK 8のインストールを実施する
 
-> $ sudo yum update -y
+>> $ sudo yum update -y
 
-> $ sudo yum install -y java-1.8.0-openjdk-devel.x86_64
+>> $ sudo yum install -y java-1.8.0-openjdk-devel.x86_64
 
-> $ sudo alternatives --config java
+>> $ sudo alternatives --config java
 
-> $ java -version
+>> $ java -version
 
-> ②.Jenkinsのyumリポジトリを追加する
+>> ②.Jenkinsのyumリポジトリを追加する
 
-> $ sudo wget -O /etc/yum.repos.d/jenkins.repo https://pkg.jenkins.io/redhat/jenkins.repo
+>> $ sudo wget -O /etc/yum.repos.d/jenkins.repo https://pkg.jenkins.io/redhat/jenkins.repo
 
-> $ sudo rpm --import https://pkg.jenkins.io/redhat/jenkins.io.key
+>> $ sudo rpm --import https://pkg.jenkins.io/redhat/jenkins.io.key
 
 > 接続先のbaseurlがhttpだとinstallでコケるのでhttpsに変更する
 
-> $ sudo vi /etc/yum.repos.d/jenkins.repo
+>> $ sudo vi /etc/yum.repos.d/jenkins.repo
+```jenkins:[jenkins]
+>> name=Jenkins
 
-> [jenkins]
+>> baseurl=https://pkg.jenkins.io/redhat
 
-> name=Jenkins
-
-> baseurl=https://pkg.jenkins.io/redhat
-
-> gpgcheck=1
+>> gpgcheck=1
+```
 
 > ③.Jenkinsをインストール
 
-> $ sudo yum install -y jenkins
+>> $ sudo yum install -y jenkins
 
-> $ rpm -qa | grep jenkins
+>> $ rpm -qa | grep jenkins
 
-> jenkins-2.202-1.1.noarch
+>> jenkins-2.202-1.1.noarch
 
 > ④.Jenkinsを起動
 
-> $ sudo systemctl start jenkins
+>> $ sudo systemctl start jenkins
 
     > Starting jenkins :                          [  OK  ]
 
-> 自動起動設定
+> ⑤.自動起動設定
 
-> $ sudo systemctl enable jenkins
+>> $ sudo systemctl enable jenkins
 
-> パッケージの詳細情報が確認できる
+> ⑥.パッケージの詳細情報が確認できる
 
-> yum info jenkins
+>> yum info jenkins
 
-> ⑤.Jenkinsの設定
+> ⑦.Jenkinsの設定
 
-> 初期設定
+>> 初期設定
 
-> http://(public IP address):8080にアクセスして画面に従ってまず初期設定する
+>> http://(public IP address):8080にアクセスして画面に従ってまず初期設定する
 
-> $ sudo less /var/lib/jenkins/secrets/initialAdminPassword
+>> $ sudo less /var/lib/jenkins/secrets/initialAdminPassword
 
-> Unlock Jenkinsは初期パスワードを確認して入力する
+>> Unlock Jenkinsは初期パスワードを確認して入力する
 
-> Customize JenkinsはとりあえずInstall suggested pulginsを選択
+>> Customize JenkinsはとりあえずInstall suggested pulginsを選択
 
-> Create First Admin Userで管理者ユーザーを登録
+>> Create First Admin Userで管理者ユーザーを登録
 
-> Instance Configurationでhttp://(public IP address):8081/jenkins/と入力
+>> Instance Configurationでhttp://(public IP address):8081/jenkins/と入力
 
-> Save and Finishで設定完了
+>> Save and Finishで設定完了
 
-> URLとportの設定を変更する
+>> URLとportの設定を変更する
 
-> 初期設定の4に書いたようにhttp://(public IP address):8081/jenkins/で動かしたいので、設定を変更してJenkinsを再起動する
+>> 初期設定の4に書いたようにhttp://(public IP address):8081/jenkins/で動かしたいので、設定を変更してJenkinsを再起動する
 
-> $ sudo vi /etc/sysconfig/jenkins
+>> $ sudo vi /etc/sysconfig/jenkins
 
-> JENKINS_PORT="8081"
+>> JENKINS_PORT="8081"
 
-> JENKINS_ARGS="--prefix=/jenkins"
+>> JENKINS_ARGS="--prefix=/jenkins"
 
-> $ sudo systemctl restart jenkins
+>> $ sudo systemctl restart jenkins
 
-> http://(public IP address):8081/jenkins/にアクセスして初期設定した管理者ユーザーでログインできれば完成
-
-
-> ⑥Jenkinsからgitを使えるようにgitをインストールする
-
-> yum install -y git
+>> http://(public IP address):8081/jenkins/にアクセスして初期設定した管理者ユーザーでログインできれば完成
 
 
-> ⑦Jenkins（http://(public IP address):8081/jenkins/）にアクセスして設定する
+> ⑧.Jenkinsからgitを使えるようにgitをインストールする
 
-> ダッシュボードで「新規ジョブ作成」
+>> yum install -y git
 
-> 　→Enter an item nameに適当な名前を付けて、「フリースタイル・プロジェクトのビルド」を選択し、ＯＫをクリック
 
-> 以下設定項目
+> ⑨.Jenkins（http://(public IP address):8081/jenkins/）にアクセスして設定する
 
-> ●General
+    >> ダッシュボードで「新規ジョブ作成」
 
-> 「Github project」にレ点を付けて、該当レポジトリのあるURLを記載
+    >> 　→Enter an item nameに適当な名前を付けて、「フリースタイル・プロジェクトのビルド」を選択し、ＯＫをクリック
 
-> 例：https://github.com/masakioikawa0503/jenkins/
+    >> 以下設定項目
 
-> ●ソースコード管理
+>> ●General
 
-> 「Git」を選択
+    >> 「Github project」にレ点を付けて、該当レポジトリのあるURLを記載
 
-> リポジトリURLは、~.gitを指定（例：https://github.com/masakioikawa0503/jenkins.git）
+    >> 例：https://github.com/masakioikawa0503/jenkins/
 
-> 認証情報は今回検証用なので「なし」のまま
+>> ●ソースコード管理
 
-> ビルドするブランチもデフォルト「*/master」のまま
+    >> 「Git」を選択
 
-> リポジトリブラウザもデフォルト「自動」
+    >> リポジトリURLは、~.gitを指定（例：https://github.com/masakioikawa0503/jenkins.git）
 
-> ●ビルド・トリガ
+    >> 認証情報は今回検証用なので「なし」のまま
 
-> GitHub hook trigger for GITScm pollingにレ点を入れる
+    >> ビルドするブランチもデフォルト「*/master」のまま
 
-> ●ビルド環境
+    >> リポジトリブラウザもデフォルト「自動」
 
-> 設定なし（レ点チェック不要）
+>> ●ビルド・トリガ
 
-> ●ビルド
+    >> GitHub hook trigger for GITScm pollingにレ点を入れる
 
-> 「ビルド手順の追加」をクリックし「シェルの実行」を選択
+>> ●ビルド環境
 
-> 「シェルの実行」欄に以下を記載（冒頭に述べたjavaサンプルプログラムのコンパイルと実行）
+    >> 設定なし（レ点チェック不要）
 
-[シェルスクリプト]
+>> ●ビルド
+
+    >> 「ビルド手順の追加」をクリックし「シェルの実行」を選択
+
+    >> 「シェルの実行」欄に以下を記載（冒頭に述べたjavaサンプルプログラムのコンパイルと実行）
+
+```Shell:シェルスクリプト（ここは参考サイトを元に今回の検証用で作成したオリジナル部分です）
 cd /var/lib/jenkins/jenkins
 git pull https://github.com/masakioikawa0503/jenkins.git
 javac Hello.java
 java Hello
-
+```
 
 > 上記投入確認後、保存をクリック
 
