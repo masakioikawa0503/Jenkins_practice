@@ -58,70 +58,59 @@ terraform apply
 
 ## Jenkins（AWS）
 ## 5.WSL2からsshでterraformで構築したEC2にアクセスし、以下参考サイトを基にJenkinsを実装
-- JenkinsをEC2に導入する方法は以下の参考サイトを参考に導入<br>
-- [【AWS EC2】Amazon Linux 2にJenkinsをインストールする](https://qiita.com/tamorieeeen/items/15d90adeebbf8b408c78)
+    JenkinsをEC2に導入する方法は以下の参考サイトを参考に導入<br>
+    [【AWS EC2】Amazon Linux 2にJenkinsをインストールする](https://qiita.com/tamorieeeen/items/15d90adeebbf8b408c78)
 
-- （以下、参考サイトより）
+    （以下、参考サイトより）
 > ①.JDK 8のインストールを実施する
 
-    >> $ sudo yum update -y
-    >> $ sudo yum install -y java-1.8.0-openjdk-devel.x86_64
-    >> $ sudo alternatives --config java
-
->> $ java -version
+    $ sudo yum update -y
+    $ sudo yum install -y java-1.8.0-openjdk-devel.x86_64
+    $ sudo alternatives --config java
+    $ java -version
 
 > ②.Jenkinsのyumリポジトリを追加する
 
->> $ sudo wget -O /etc/yum.repos.d/jenkins.repo https://pkg.jenkins.io/redhat/jenkins.repo
+    $ sudo wget -O /etc/yum.repos.d/jenkins.repo https://pkg.jenkins.io/redhat/jenkins.repo
+    $ sudo rpm --import https://pkg.jenkins.io/redhat/jenkins.io.key
+        接続先のbaseurlがhttpだとinstallでコケるのでhttpsに変更する
 
->> $ sudo rpm --import https://pkg.jenkins.io/redhat/jenkins.io.key
+    $ sudo vi /etc/yum.repos.d/jenkins.repo
+    ```jenkins:[jenkins]
+    >> name=Jenkins
 
-> 接続先のbaseurlがhttpだとinstallでコケるのでhttpsに変更する
+    >> baseurl=https://pkg.jenkins.io/redhat
 
->> $ sudo vi /etc/yum.repos.d/jenkins.repo
-```jenkins:[jenkins]
->> name=Jenkins
-
->> baseurl=https://pkg.jenkins.io/redhat
-
->> gpgcheck=1
-```
-
+    >> gpgcheck=1
+    ```
+    
 > ③.Jenkinsをインストール
 
->> $ sudo yum install -y jenkins
-
->> $ rpm -qa | grep jenkins
-
->> jenkins-2.202-1.1.noarch
+    $ sudo yum install -y jenkins
+    $ rpm -qa | grep jenkins
+    jenkins-2.202-1.1.noarch
 
 > ④.Jenkinsを起動
 
->> $ sudo systemctl start jenkins
-
-    > Starting jenkins :                          [  OK  ]
+    $ sudo systemctl start jenkins
+        > Starting jenkins :                          [  OK  ]
 
 > ⑤.自動起動設定
 
->> $ sudo systemctl enable jenkins
+    $ sudo systemctl enable jenkins
 
 > ⑥.パッケージの詳細情報が確認できる
 
->> yum info jenkins
+    yum info jenkins
 
 > ⑦.Jenkinsの設定
 
->> 初期設定
-
->> http://(public IP address):8080にアクセスして画面に従ってまず初期設定する
-
->> $ sudo less /var/lib/jenkins/secrets/initialAdminPassword
-
->> Unlock Jenkinsは初期パスワードを確認して入力する
-
->> Customize JenkinsはとりあえずInstall suggested pulginsを選択
-
->> Create First Admin Userで管理者ユーザーを登録
+    http://(public IP address):8080にアクセスして画面に従ってまず初期設定する
+    $ sudo less /var/lib/jenkins/secrets/initialAdminPassword
+    Unlock Jenkinsは初期パスワードを確認して入力する
+    
+    Customize JenkinsはとりあえずInstall suggested pulginsを選択
+        Create First Admin Userで管理者ユーザーを登録
 
 >> Instance Configurationでhttp://(public IP address):8081/jenkins/と入力
 
