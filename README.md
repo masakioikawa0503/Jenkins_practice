@@ -12,7 +12,7 @@ Jenkins(AWS)とGithubの連携を行うにあたり、備忘録として手順�
     URL→https://github.com/masakioikawa0503/jenkins
     リポジトリ→https://github.com/masakioikawa0503/jenkins.git
 - Jenkins(EC2 on AWSで実装)
-    (簡単に検証環境を構築したいため、「Terraterm」でVPC、パブリックサブネット、IGW、セキュリティグループ、EC2を一気に作成する）
+    - (簡単に検証環境を構築したいため、「Terraterm」でVPC、パブリックサブネット、IGW、セキュリティグループ、EC2を一気に作成する）
 
 # 検証条件
 - 本当はJenkinsサーバ（CI）とデプロイ先サーバ(CD)を分けての検証を視野に入れたが以下の理由により今回は1台（CIサーバのみ）として実装
@@ -25,17 +25,17 @@ Jenkins(AWS)とGithubの連携を行うにあたり、備忘録として手順�
     - (Jenkinsでは事前にGithubの該当リモートリポジトリからgit cloneをしてリポジトリを取得する)
 
 # 手順
-・以下に私が実施した手順(例)を示す
-（手順は主にGithubとJenkinsの連携部分に焦点をあてて記述していく。例えばGithubのリポジトリの作り方等は他サイトを参照して作成する）
+- 以下に私が実施した手順(例)を示す
+    -（手順は主にGithubとJenkinsの連携部分に焦点をあてて記述していく。例えばGithubのリポジトリの作り方等は他サイトを参照して作成する）
 
 
 
-#Github
+# Github
 =========================
-①検証用リポジトリを作成
-https://github.com/masakioikawa0503/jenkins.git
+1.検証用リポジトリを作成
+[今回の検証用リモートリポジトリ](https://github.com/masakioikawa0503/jenkins.git)
 
-②サンプルファイルを作成する
+2.サンプルファイルを作成する
 作成ファイルは上記リポジトリを参照
 
 =========================
@@ -44,38 +44,48 @@ https://github.com/masakioikawa0503/jenkins.git
 ↓
 ↓
 
-#ローカル(WSL2)
+# ローカル(WSL2)
 =========================
-③git clone https://github.com/masakioikawa0503/jenkins.git
-→検証用リポジトリがダウンロードされたか確認する
+3.検証用リモートリポジトリのクローン
+```git:検証用リモートリポジトリをローカルにクローンする
+git clone https://github.com/masakioikawa0503/jenkins.git
+```
 
-④EC2環境をterraformで構築する
-下記をgitクローン後Terraform_AWSディレクトリに進み、「terraform init→terraform plan→terraform apply」を実行する 
-https://github.com/masakioikawa0503/Terraform_AWS.git
+4.EC2環境をterraformで構築する
+- 下記をgitクローン後Terraform_AWSディレクトリに進み、「terraform init→terraform plan→terraform apply」を実行する
+    - (事前にterraformのインストールやEC2インスタンスへのアクセスキー等の準備が必要)
+```terraform:terraformでEC2環境を構築
+git clone https://github.com/masakioikawa0503/Terraform_AWS.git
+cd Terraform_AWS
+terraform init
+terraform plan
+terraform apply
+※検証が終わったらterraform destroy
+```
 
-　詳細なterraformの使い方は公式ドキュメントを参考
-　https://registry.terraform.io/providers/hashicorp/aws/latest/docs
+詳細なterraformの使い方は公式ドキュメントを参考
+[Terraform](https://registry.terraform.io/providers/hashicorp/aws/latest/docs)
 =========================
 
 ↓
 ↓
 ↓
 
-#Jenkins（AWS）
+# Jenkins（AWS）
 =========================
-⑤WSL2からsshでterraformで構築したEC2にアクセスし、以下参考サイトを基にJenkinsを実装
+5.WSL2からsshでterraformで構築したEC2にアクセスし、以下参考サイトを基にJenkinsを実装
 
 また、JenkinsをEC2に導入する方法は以下の参考サイトを参考に導入
-https://qiita.com/tamorieeeen/items/15d90adeebbf8b408c78
-↓
-（以下、参考サイトより）
-1.JDK 8のインストールを実施する
+[【AWS EC2】Amazon Linux 2にJenkinsをインストールする](https://qiita.com/tamorieeeen/items/15d90adeebbf8b408c78)
+
+- （以下、参考サイトより）
+> ①.JDK 8のインストールを実施する
 $ sudo yum update -y
 $ sudo yum install -y java-1.8.0-openjdk-devel.x86_64
 $ sudo alternatives --config java
 $ java -version
 
-2.Jenkinsのyumリポジトリを追加する
+②.Jenkinsのyumリポジトリを追加する
 $ sudo wget -O /etc/yum.repos.d/jenkins.repo https://pkg.jenkins.io/redhat/jenkins.repo
 $ sudo rpm --import https://pkg.jenkins.io/redhat/jenkins.io.key
 
@@ -87,12 +97,12 @@ name=Jenkins
 baseurl=https://pkg.jenkins.io/redhat
 gpgcheck=1
 
-3.Jenkinsをインストール
+③.Jenkinsをインストール
 $ sudo yum install -y jenkins
 $ rpm -qa | grep jenkins
 jenkins-2.202-1.1.noarch
 
-4.Jenkinsを起動
+④.Jenkinsを起動
 $ sudo systemctl start jenkins
 Starting jenkins :                          [  OK  ]
 
@@ -102,7 +112,7 @@ $ sudo systemctl enable jenkins
 パッケージの詳細情報が確認できる
 yum info jenkins
 
-5.Jenkinsの設定
+⑤.Jenkinsの設定
 
 初期設定
 http://(public IP address):8080にアクセスして画面に従ってまず初期設定する
