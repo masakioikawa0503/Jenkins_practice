@@ -30,16 +30,14 @@ Jenkins(AWS)とGithubの連携を行うにあたり、備忘録として手順�
 
 
 
-# Github
-1.検証用リポジトリを作成
+## Github
+1.検証用リポジトリを作成<br>
 [今回の検証用リモートリポジトリ](https://github.com/masakioikawa0503/jenkins.git)
 
 2.サンプルファイルを作成する
 作成ファイルは上記リポジトリを参照
 
-
-
-# ローカル(WSL2)
+## ローカル(WSL2)
 3.検証用リモートリポジトリのクローン
 ```git:検証用リモートリポジトリをローカルにクローンする
 git clone https://github.com/masakioikawa0503/jenkins.git
@@ -57,24 +55,23 @@ terraform apply
 ※検証が終わったらterraform destroy
 ```
 
-詳細なterraformの使い方は公式ドキュメントを参考
+詳細なterraformの使い方は公式ドキュメントを参考<br>
 [Terraform](https://registry.terraform.io/providers/hashicorp/aws/latest/docs)
 
 
 
-# Jenkins（AWS）
+## Jenkins（AWS）
 =========================
 5.WSL2からsshでterraformで構築したEC2にアクセスし、以下参考サイトを基にJenkinsを実装
-
-また、JenkinsをEC2に導入する方法は以下の参考サイトを参考に導入
-[【AWS EC2】Amazon Linux 2にJenkinsをインストールする](https://qiita.com/tamorieeeen/items/15d90adeebbf8b408c78)
+- JenkinsをEC2に導入する方法は以下の参考サイトを参考に導入<br>
+    - [【AWS EC2】Amazon Linux 2にJenkinsをインストールする](https://qiita.com/tamorieeeen/items/15d90adeebbf8b408c78)
 
 - （以下、参考サイトより）
 > ①.JDK 8のインストールを実施する
-$ sudo yum update -y
-$ sudo yum install -y java-1.8.0-openjdk-devel.x86_64
-$ sudo alternatives --config java
-$ java -version
+> $ sudo yum update -y
+> $ sudo yum install -y java-1.8.0-openjdk-devel.x86_64
+> $ sudo alternatives --config java
+> $ java -version
 
 ②.Jenkinsのyumリポジトリを追加する
 $ sudo wget -O /etc/yum.repos.d/jenkins.repo https://pkg.jenkins.io/redhat/jenkins.repo
