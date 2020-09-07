@@ -165,12 +165,12 @@ terraform apply
         「シェルの実行」欄に以下を記載（冒頭に述べたjavaサンプルプログラムのコンパイルと実行）
 
     （以下は今回の検証用に用意したオリジナルスクリプト）
-    ```Shell:シェルスクリプト
+    〇シェルスクリプト
     cd /var/lib/jenkins/jenkins
     git pull https://github.com/masakioikawa0503/jenkins.git
     javac Hello.java
     java Hello
-    ```
+    
 
     上記投入確認後、保存をクリック
 
@@ -243,24 +243,27 @@ terraform apply
 
     （上記で器を用意してあげれば、あとはJenkinsのビルドスクリプトで記載したシェルスクリプトでgit push通知を受けるたび、git pullして処理を実施する形になる）
 
-#Github
+
+# Github
 7.Githubリポジトリ（自分のアカウント上）右上Settings→「SSH and GPG Keys」を開く
-- SSH Keysで「New SSH Key」を選択して、Titleとkey(前述した「③.公開鍵を作成(今回パスフレーズ等は空で作成)」で作成したJenkinsの公開鍵の内容をそのままコピ&ペースト)を投入→Ass SSH keyをクリック
+
+    - SSH Keysで「New SSH Key」を選択して、Titleとkey(前述した「③.公開鍵を作成(今回パスフレーズ等は空で作成)」で作成したJenkinsの公開鍵の内容をそのままコピ&ペースト)を投入→Ass SSH keyをクリック
 
 8.リモートリポジトリの設定
-- 今回検証用で用意したJenkinsと連携するリポジトリの「Settings」を選択
--「webhooks」を選択し「Add webhook」をクリック
-- Payload URL：http://[Jenkinsのホスト名（ポート番号やプレフィックスを指定している場合はそれも記載）]/github-webhook/
-    (例：〇〇.〇〇.〇〇.〇〇:8081/jenkins/github-webhook/)
-- Content type
-    application/x-www-form-urlencordedを選択
-- secret
-    記載なし
-- Which events would you like to trigger this webhook?
-    「Just the push event.」を選択
-- Activeにレ点が入っていることをチェック
 
-- 上記投入後「Update webhook」をクリック
+    - 今回検証用で用意したJenkinsと連携するリポジトリの「Settings」を選択
+    -「webhooks」を選択し「Add webhook」をクリック
+    - Payload URL：http://[Jenkinsのホスト名（ポート番号やプレフィックスを指定している場合はそれも記載）]/github-webhook/
+     (例：〇〇.〇〇.〇〇.〇〇:8081/jenkins/github-webhook/)
+    - Content type
+    application/x-www-form-urlencordedを選択
+    - secret
+        記載なし
+    - Which events would you like to trigger this webhook?
+    「Just the push event.」を選択
+    - Activeにレ点が入っていることをチェック
+
+    - 上記投入後「Update webhook」をクリック
     適用が成功すると、Webhooksの設定したURLに緑色のレ点が付く（最初は〇印で、適用失敗だと△の警告が表示される）
 
 
